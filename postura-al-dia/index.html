@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2f5d3a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Postura">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Postura al Día</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: una columna de trabajo tipo libreta de galpón; resumen arriba, registro, curva, diagnóstico, historial */
+:root{
+  --bg:#f5f6ef; --surface:#ffffff; --ink:#1f2a22; --muted:#5d6a5f; --line:#d9dfd2;
+  --green:#2f5d3a; --yolk:#c97f00; --yolk-soft:#fbefd2;
+  --ok:#2f7d46; --ok-bg:#e3f2e7; --warn:#a86400; --warn-bg:#fdf0d8; --bad:#b3362b; --bad-bg:#fbe4e1;
+  --display:"Familjen Grotesk", "Arial Narrow", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141a16; --surface:#1d251f; --ink:#e8ede6; --muted:#a3b0a5; --line:#33402f;
+  --green:#8cc79a; --yolk:#f0b23a; --yolk-soft:#3a2f17;
+  --ok:#7fd196; --ok-bg:#1f3a27; --warn:#f2b45a; --warn-bg:#3d2e14; --bad:#f08a80; --bad-bg:#40201d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141a16; --surface:#1d251f; --ink:#e8ede6; --muted:#a3b0a5; --line:#33402f;
+  --green:#8cc79a; --yolk:#f0b23a; --yolk-soft:#3a2f17;
+  --ok:#7fd196; --ok-bg:#1f3a27; --warn:#f2b45a; --warn-bg:#3d2e14; --bad:#f08a80; --bad-bg:#40201d; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
+h1,h2{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.15}
+h1{font-size:1.9rem;color:var(--green)}
+h2{font-size:1.2rem}
+.sub{color:var(--muted);margin:4px 0 0}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:end;justify-content:space-between}
+.egg{display:inline-block;width:.75em;height:.95em;background:var(--yolk);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;margin-right:8px;vertical-align:-.05em}
+section{display:flex;flex-direction:column;gap:12px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--muted);min-width:0}
+input,select{font:inherit;font-size:1rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;width:100%;box-sizing:border-box}
+input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--yolk);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+button{font:inherit;font-weight:700;border-radius:8px;padding:10px 16px;border:1px solid var(--green);background:var(--green);color:var(--surface);cursor:pointer}
+button.ghost{background:transparent;color:var(--green)}
+button.small{padding:6px 10px;font-size:.85rem}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.lote-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.lote-bar label{flex:1 1 220px}
+.uplabel{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+/* resumen */
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat b{font-family:var(--display);font-size:1.7rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat small{color:var(--muted)}
+.verdict{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 14px;border-radius:8px;font-weight:700}
+.verdict.ok{background:var(--ok-bg);color:var(--ok)} .verdict.warn{background:var(--warn-bg);color:var(--warn)} .verdict.bad{background:var(--bad-bg);color:var(--bad)} .verdict.none{background:var(--bg);color:var(--muted)}
+.verdict span{font-weight:400;color:var(--ink)}
+.pill{display:inline-block;font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)} .pill.warn{background:var(--warn-bg);color:var(--warn)} .pill.bad{background:var(--bad-bg);color:var(--bad)}
+/* chart */
+.chartbox{overflow-x:auto}
+svg text{fill:var(--muted);font-family:var(--body);font-size:11px}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:.85rem;color:var(--muted)}
+.legend i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:6px}
+/* diagnostico */
+.causes{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.causes li{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;padding:10px 12px;border:1px solid var(--line);border-radius:8px}
+.causes li .pill{grid-row:span 2;align-self:start}
+.causes li p{margin:0;color:var(--muted);font-size:.92rem}
+/* tabla */
+.tablebox{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:.92rem}
+th,td{text-align:right;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+details summary{cursor:pointer;font-weight:700;color:var(--green)}
+.note{font-size:.85rem;color:var(--muted);margin:0}
+.banner{background:var(--yolk-soft);border-radius:8px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.banner p{margin:0}
+.hint{font-size:.78rem;color:var(--muted);font-weight:400}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:0;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:start}
+.steps li::before{content:counter(s);grid-row:span 2;width:30px;height:30px;border-radius:50%;background:var(--yolk);color:var(--surface);font-family:var(--display);font-weight:700;display:grid;place-items:center}
+.steps li p{margin:0;font-size:.9rem;color:var(--muted)}
+.calc{background:var(--bg);border-radius:8px;padding:10px 14px;font-size:.92rem;margin:0}
+.calc code{font-family:var(--body);font-weight:700;font-variant-numeric:tabular-nums}
+.semaforo{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.85rem;color:var(--muted);margin:0}
+.howto{margin:0;padding-left:20px;font-size:.92rem;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.todo{grid-column:2;margin-top:4px;font-size:.88rem}
+.todo b{color:var(--green)}
+dl.glos{display:grid;grid-template-columns:minmax(120px,max-content) 1fr;gap:8px 16px;margin:8px 0 0}
+dl.glos dt{font-weight:700}
+dl.glos dd{margin:0;color:var(--muted)}
+@media (max-width:480px){dl.glos{grid-template-columns:1fr}dl.glos dd{margin-bottom:6px}}
+@media (max-width:560px){
+  h1{font-size:1.55rem}
+  .wrap{gap:14px;padding-block:12px 40px}
+  .panel{padding:14px}
+  .grid{grid-template-columns:1fr 1fr}
+  .grid .row,#formLote label:first-child{grid-column:1/-1}
+  .grid button{width:100%;padding:14px}
+  .summary{grid-template-columns:1fr 1fr}
+  .stat b{font-size:1.45rem}
+  input,select{font-size:16px;padding:12px}
+  .lote-bar button{width:100%}
+  .hist thead{display:none}
+  .hist,.hist tbody,.hist tr,.hist td{display:block;width:100%}
+  .hist tr{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .hist td{border:0;padding:0;text-align:left;white-space:normal}
+  .hist td[data-l]::before{content:attr(data-l);display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .hist td:last-child{grid-column:1/-1}
+}
+.toast{min-height:1.4em;color:var(--ok);font-weight:700;margin:0}
+@media (prefers-reduced-motion:no-preference){.verdict{transition:background .3s}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1><span class="egg" aria-hidden="true"></span>Postura al Día</h1>
+      <p class="sub">Compara la producción de huevos de tu lote con la tabla de su línea genética, semana a semana.</p>
+    </div>
+  </header>
+
+  <section class="panel" aria-labelledby="hComo">
+    <h2 id="hComo">Cómo se usa</h2>
+    <ol class="steps">
+      <li><b>Crea tu lote</b><p>Indica la línea genética, cuántas aves tienes y su edad en semanas.</p></li>
+      <li><b>Anota cada día</b><p>Cuenta los huevos recogidos y las aves muertas. Si puedes, agrega alimento, temperatura y luz.</p></li>
+      <li><b>Compara con la tabla</b><p>La app calcula tu % de postura y te dice si vas bien o por debajo de lo esperado.</p></li>
+      <li><b>Busca la causa</b><p>Si estás por debajo, revisa las causas probables y lo que puedes hacer hoy.</p></li>
+    </ol>
+  </section>
+
+  <div class="banner" id="demoBanner" hidden>
+    <p><b>Datos de ejemplo.</b> Pruébalo y luego crea tu propio lote.</p>
+    <button class="small ghost" id="clearDemo" type="button">Borrar ejemplo</button>
+  </div>
+
+  <section class="panel" aria-labelledby="hLote">
+    <h2 id="hLote">Lote</h2>
+    <div class="lote-bar">
+      <label for="loteSel">Lote activo<select id="loteSel"></select></label>
+      <button class="ghost" type="button" id="btnNuevo">+ Nuevo lote</button>
+    </div>
+    <form id="formLote" class="grid" hidden>
+      <label for="lNombre">Nombre del lote<input id="lNombre" required placeholder="Galpón 2"></label>
+      <label for="lLinea">Línea genética<select id="lLinea"></select></label>
+      <label for="lAves">Aves al inicio<input id="lAves" type="number" inputmode="numeric" min="1" required placeholder="1000"></label>
+      <label for="lEdad">Edad hoy (semanas)<input id="lEdad" type="number" inputmode="numeric" min="1" max="110" required placeholder="20"><span class="hint">Semanas desde que nacieron las pollitas.</span></label>
+      <div class="row"><button type="submit">Crear lote</button><button class="ghost" type="button" id="cancelLote">Cancelar</button></div>
+    </form>
+  </section>
+
+  <section class="panel" aria-labelledby="hRes">
+    <div class="row" style="justify-content:space-between"><h2 id="hRes">Hoy en el galpón</h2><span class="note" id="resFecha"></span></div>
+    <div class="summary" id="summary"></div>
+    <div class="verdict none" id="verdict">Registra la recolección de hoy para ver la comparación.</div>
+    <p class="calc" id="calc" hidden></p>
+    <p class="semaforo"><span><span class="pill ok">En la tabla</span> hasta 2 puntos abajo</span><span><span class="pill warn">Por debajo</span> de 2 a 6 puntos abajo: revisa pronto</span><span><span class="pill bad">Muy por debajo</span> más de 6 puntos: actúa hoy</span></p>
+  </section>
+
+  <section class="panel" aria-labelledby="hReg">
+    <h2 id="hReg">Registrar día</h2>
+    <form id="formReg" class="grid">
+      <label for="rFecha">Fecha<input id="rFecha" type="date" required></label>
+      <label for="rHuevos">Huevos recogidos<input id="rHuevos" type="number" inputmode="numeric" min="0" required placeholder="850"><span class="hint">Todos los huevos del día, incluidos rotos y sucios.</span></label>
+      <label for="rMuertes">Aves muertas hoy<input id="rMuertes" type="number" inputmode="numeric" min="0" value="0"><span class="hint">Se restan para calcular las aves vivas.</span></label>
+      <label for="rAlimento">Alimento dado (kg)<input id="rAlimento" type="number" inputmode="decimal" min="0" step="0.1" placeholder="Opcional"><span class="hint">Total servido al lote en el día.</span></label>
+      <label for="rTemp">Temperatura máx. (°C)<input id="rTemp" type="number" inputmode="decimal" step="0.5" placeholder="Opcional"><span class="hint">La más alta del día dentro del galpón.</span></label>
+      <label for="rLuz">Horas de luz<input id="rLuz" type="number" inputmode="decimal" min="0" max="24" step="0.5" placeholder="Opcional"><span class="hint">Luz natural más luz artificial. Lo ideal: 16 h.</span></label>
+      <label for="rAgua">¿Agua sin problemas?<select id="rAgua"><option value="si">Sí</option><option value="no">No, faltó o estaba sucia</option></select></label>
+      <div class="row" style="align-self:end"><button type="submit">Guardar</button></div>
+    </form>
+    <p class="toast" id="toast" role="status"></p>
+    <p class="note">Los datos se guardan en este celular o computadora. Si borras los datos del navegador, se pierden.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="hCurva">
+    <h2 id="hCurva">Curva de postura</h2>
+    <div class="legend"><span><i style="background:var(--muted)"></i>Tabla de la línea</span><span><i style="background:var(--yolk);height:4px"></i>Tu lote (promedio semanal)</span></div>
+    <div class="chartbox" id="chart"></div>
+    <ul class="howto"><li>La línea punteada es lo que la línea genética debería producir cada semana de edad.</li><li>Los puntos amarillos son el promedio de tu lote en cada semana.</li><li>Si tus puntos caen dentro de la zona gris o debajo de ella, tu lote está perdiendo huevos.</li><li>Es normal que la postura suba rápido entre las semanas 18 y 25, llegue a su pico y luego baje poco a poco.</li></ul>
+  </section>
+
+  <section class="panel" aria-labelledby="hDiag" id="diagPanel">
+    <h2 id="hDiag">Buscar el origen</h2>
+    <p class="note" id="diagIntro"></p>
+    <ul class="causes" id="causes"></ul>
+  </section>
+
+  <section class="panel" aria-labelledby="hHist">
+    <h2 id="hHist">Historial</h2>
+    <div class="tablebox"><table class="hist"><thead><tr><th>Fecha</th><th>Sem.</th><th>Aves</th><th>Huevos</th><th>% real</th><th>% tabla</th><th>Estado</th><th></th></tr></thead><tbody id="hist"></tbody></table></div>
+  </section>
+
+  <section class="panel">
+    <details open>
+      <summary>Palabras clave</summary>
+      <dl class="glos">
+        <dt>% de postura</dt><dd>De cada 100 gallinas vivas, cuántas pusieron un huevo ese día. 90% = 90 huevos por cada 100 gallinas.</dd>
+        <dt>Línea genética</dt><dd>La raza comercial de tus gallinas (Hy-Line, Lohmann, ISA). Cada una tiene su propia tabla de producción.</dd>
+        <dt>Semana de edad</dt><dd>Semanas desde el nacimiento. La tabla cambia con la edad, por eso es clave registrarla bien.</dd>
+        <dt>Pico de postura</dt><dd>El punto más alto de producción, entre las semanas 25 y 32 aprox. Un buen pico sostiene todo el ciclo.</dd>
+        <dt>Mortalidad</dt><dd>Aves muertas. Más de 1 por cada 1000 aves a la semana es una señal de alerta.</dd>
+      </dl>
+    </details>
+  </section>
+
+  <section class="panel">
+    <details>
+      <summary>Ver tabla de referencia de la línea</summary>
+      <p class="note" style="margin-top:8px">Valores aproximados de % de postura (gallina/día). Para mayor precisión, compáralos con la guía oficial de manejo de tu proveedor.</p>
+      <div class="tablebox"><table><thead><tr><th>Semana</th><th>% postura</th><th>Huevos por 1000 aves</th></tr></thead><tbody id="ref"></tbody></table></div>
+    </details>
+  </section>
+</div>
+
+<script>
+const LINEAS={
+  "hyline-brown":{nombre:"Hy-Line Brown",delta:0,alim:110},
+  "lohmann-brown":{nombre:"Lohmann Brown-Classic",delta:-0.8,alim:115},
+  "isa-brown":{nombre:"ISA Brown",delta:-0.4,alim:112},
+  "hyline-w36":{nombre:"Hy-Line W-36 (blanca)",delta:0.8,alim:98}
+};
+const CURVA=[[18,10],[19,35],[20,65],[21,83],[22,90],[23,93],[24,94],[25,95],[30,95],[35,94],[40,92.5],[45,91],[50,89],[55,87],[60,85],[65,82.5],[70,80],[75,77],[80,74],[85,71],[90,68],[100,63]];
+function estandar(linea,sem){
+  if(sem<18) return 0;
+  let v=CURVA[CURVA.length-1][1];
+  for(let i=0;i<CURVA.length-1;i++){const[a,va]=CURVA[i],[b,vb]=CURVA[i+1];if(sem>=a&&sem<=b){v=va+(vb-va)*(sem-a)/(b-a);break}}
+  if(sem>=22) v+=(LINEAS[linea]||LINEAS["hyline-brown"]).delta;
+  return Math.max(0,Math.min(97,Math.round(v*10)/10));
+}
+const KEY="postura-al-dia-v1";
+const DAY=86400000;
+const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+const parse=s=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
+const hoy=iso(new Date());
+let state;
+
+function demo(){
+  const nac=new Date(parse(hoy).getTime()-33*7*DAY);
+  const regs=[];let muertas=0;
+  for(let i=20;i>=0;i--){
+    const f=new Date(parse(hoy).getTime()-i*DAY);
+    const m=i%6===0?2:(i%4===0?1:0);muertas+=m;
+    const aves=1000-muertas;
+    const caida=i<7?7:0; // la ultima semana baja por calor
+    const pct=(94-caida-(i%3))/100;
+    regs.push({fecha:iso(f),huevos:Math.round(aves*pct),muertes:m,alimento:i<7?98:112,temp:i<7?34:30,luz:16,agua:"si"});
+  }
+  return {demo:true,activo:"demo",lotes:[{id:"demo",nombre:"Galpón 1 (ejemplo)",linea:"hyline-brown",aves:1000,nacimiento:iso(nac),registros:regs}]};
+}
+function load(){try{const s=localStorage.getItem(KEY);if(s){const o=JSON.parse(s);if(o&&o.lotes)return o}}catch(e){}return demo()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+state=load();
+
+const $=id=>document.getElementById(id);
+const lote=()=>state.lotes.find(l=>l.id===state.activo)||state.lotes[0];
+const semana=(l,f)=>Math.floor((parse(f)-parse(l.nacimiento))/(7*DAY));
+const vivas=(l,f)=>l.aves-l.registros.filter(r=>r.fecha<=f).reduce((s,r)=>s+(+r.muertes||0),0);
+function estado(real,std){const d=real-std;if(std===0)return{c:"none",t:"Pre-postura"};if(d>=-2)return{c:"ok",t:d>2?"Sobre la tabla":"En la tabla"};if(d>=-6)return{c:"warn",t:"Por debajo"};return{c:"bad",t:"Muy por debajo"}}
+const fmt=(n,d=1)=>n.toLocaleString("es-PE",{minimumFractionDigits:d,maximumFractionDigits:d});
+function fila(l,r){const s=semana(l,r.fecha),a=vivas(l,r.fecha),real=a>0?r.huevos/a*100:0,std=estandar(l.linea,s);return{...r,sem:s,aves:a,real,std,est:estado(real,std)}}
+
+function renderLotes(){
+  $("loteSel").innerHTML=state.lotes.map(l=>`<option value="${l.id}">${esc(l.nombre)} · ${LINEAS[l.linea].nombre}</option>`).join("");
+  $("loteSel").value=lote().id;
+  $("lLinea").innerHTML=Object.entries(LINEAS).map(([k,v])=>`<option value="${k}">${v.nombre}</option>`).join("");
+  $("demoBanner").hidden=!state.demo;
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c])}
+
+function render(){
+  renderLotes();
+  const l=lote();
+  const regs=[...l.registros].sort((a,b)=>a.fecha<b.fecha?-1:1).map(r=>fila(l,r));
+  const ult=regs[regs.length-1];
+  const semHoy=semana(l,hoy),avesHoy=vivas(l,hoy);
+  $("resFecha").textContent=ult?`Último registro: ${parse(ult.fecha).toLocaleDateString("es-PE",{day:"numeric",month:"short"})}`:"";
+  const stdHoy=ult?ult.std:estandar(l.linea,semHoy);
+  $("summary").innerHTML=[
+    ["Semana de edad",semHoy,""],
+    ["Aves vivas",avesHoy.toLocaleString("es-PE"),`de ${l.aves.toLocaleString("es-PE")}`],
+    ["% postura real",ult?fmt(ult.real)+"%":"–",ult?`${ult.huevos.toLocaleString("es-PE")} huevos`:"sin registro"],
+    ["% según tabla",fmt(stdHoy)+"%",LINEAS[l.linea].nombre]
+  ].map(([a,b,c])=>`<div class="stat"><span class="uplabel">${a}</span><b>${b}</b><small>${c}</small></div>`).join("");
+  const v=$("verdict");
+  if(!ult){v.className="verdict none";v.textContent="Registra la recolección de hoy para ver la comparación."}
+  else{
+    v.className="verdict "+ult.est.c;
+    const falt=Math.round(ult.std/100*ult.aves-ult.huevos);
+    v.innerHTML=ult.est.c==="none"?`${ult.est.t} <span>El lote aún no llega a la semana 18.</span>`:
+      `${ult.est.t} <span>${falt>0?`Faltan unos <b>${falt.toLocaleString("es-PE")} huevos por día</b> para llegar a la tabla (${fmt(ult.real-ult.std)} puntos).`:`Produce ${Math.abs(falt).toLocaleString("es-PE")} huevos por día sobre la tabla. Buen trabajo.`}</span>`;
+  }
+  const calc=$("calc");
+  if(ult&&ult.aves>0){calc.hidden=false;calc.innerHTML=`<b>¿Cómo se calcula?</b> % de postura = huevos ÷ aves vivas × 100 → <code>${ult.huevos.toLocaleString("es-PE")} ÷ ${ult.aves.toLocaleString("es-PE")} × 100 = ${fmt(ult.real)}%</code>. La tabla dice que a la semana ${ult.sem} deberías tener <code>${fmt(ult.std)}%</code>, es decir, unos <code>${Math.round(ult.std/100*ult.aves).toLocaleString("es-PE")}</code> huevos.`}else calc.hidden=true;
+  renderChart(l,regs);
+  renderDiag(l,regs);
+  $("hist").innerHTML=regs.slice().reverse().map(r=>`<tr><td data-l="Fecha">${parse(r.fecha).toLocaleDateString("es-PE",{day:"2-digit",month:"short"})}</td><td data-l="Semana">${r.sem}</td><td data-l="Aves">${r.aves.toLocaleString("es-PE")}</td><td data-l="Huevos">${r.huevos.toLocaleString("es-PE")}</td><td data-l="% real">${fmt(r.real)}</td><td data-l="% tabla">${fmt(r.std)}</td><td data-l="Estado"><span class="pill ${r.est.c}">${r.est.t}</span></td><td><button class="small ghost" data-del="${r.fecha}" type="button" aria-label="Borrar registro">Borrar</button></td></tr>`).join("")||`<tr><td colspan="8" style="text-align:left;color:var(--muted)">Aún no hay registros.</td></tr>`;
+  const ref=[];for(let s=18;s<=100;s+= s<26?1:5){const p=estandar(l.linea,s);ref.push(`<tr><td>${s}</td><td>${fmt(p)}</td><td>${Math.round(p*10).toLocaleString("es-PE")}</td></tr>`)}
+  $("ref").innerHTML=ref.join("");
+}
+
+function renderChart(l,regs){
+  const W=Math.max(300,Math.min(728,$("chart").clientWidth||680)),H=W<500?220:260,m={l:40,r:14,t:12,b:30};
+  const porSem={};regs.forEach(r=>{(porSem[r.sem]=porSem[r.sem]||[]).push(r.real)});
+  const sems=Object.keys(porSem).map(Number);
+  const s0=Math.min(18,...(sems.length?sems:[18])),s1=Math.max(s0+20,(sems.length?Math.max(...sems):semana(l,hoy))+6);
+  const x=s=>m.l+(s-s0)/(s1-s0)*(W-m.l-m.r),y=p=>m.t+(1-p/100)*(H-m.t-m.b);
+  let g="";
+  for(let p=0;p<=100;p+=20)g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(p)}" y2="${y(p)}" stroke="var(--line)"/><text x="${m.l-6}" y="${y(p)+4}" text-anchor="end">${p}%</text>`;
+  const step=Math.ceil((s1-s0)/(W<500?5:10)/5)*5||5;
+  for(let s=Math.ceil(s0/step)*step;s<=s1;s+=step)g+=`<text x="${x(s)}" y="${H-10}" text-anchor="middle">${s}</text>`;
+  g+=`<text x="${W-m.r}" y="${H-10}" text-anchor="end" style="font-size:10px">sem.</text>`;
+  let ps=[],band=[];for(let s=s0;s<=s1;s+=0.5){const p=estandar(l.linea,s);ps.push(`${x(s)},${y(p)}`);band.push([x(s),y(p),y(Math.max(0,p-6))])}
+  g+=`<path d="M${band.map(b=>b[0]+","+b[1]).join("L")}L${band.slice().reverse().map(b=>b[0]+","+b[2]).join("L")}Z" fill="var(--line)" opacity=".55"/>`;
+  g+=`<polyline points="${ps.join(" ")}" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4"/>`;
+  const pts=sems.sort((a,b)=>a-b).map(s=>{const a=porSem[s].reduce((x,y)=>x+y,0)/porSem[s].length;return[s,a]});
+  if(pts.length)g+=`<polyline points="${pts.map(([s,a])=>x(s)+","+y(a)).join(" ")}" fill="none" stroke="var(--yolk)" stroke-width="3"/>`;
+  pts.forEach(([s,a],i)=>{const e=estado(a,estandar(l.linea,s));const c=e.c==="bad"?"var(--bad)":e.c==="warn"?"var(--warn)":"var(--yolk)";g+=`<circle cx="${x(s)}" cy="${y(a)}" r="${i===pts.length-1?6:4}" fill="${c}" stroke="var(--surface)" stroke-width="2"><title>Semana ${s}: ${fmt(a)}%</title></circle>`});
+  $("chart").innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block;max-width:100%;height:auto" role="img" aria-label="Curva de postura del lote comparada con la tabla">${g}</svg><p class="note">La zona sombreada marca hasta 6 puntos por debajo de la tabla.</p>`;
+}
+
+function renderDiag(l,regs){
+  const ult=regs[regs.length-1];
+  const intro=$("diagIntro"),ul=$("causes");
+  if(!ult||ult.est.c==="ok"||ult.est.c==="none"){
+    intro.textContent=ult&&ult.est.c==="ok"?"Tu lote está dentro de la tabla. Si en algún registro cae por debajo, aquí verás las causas más probables.":"Cuando el lote produzca por debajo de la tabla, aquí verás las causas más probables según tus registros.";
+    ul.innerHTML="";return;
+  }
+  intro.textContent="Tu lote produce menos de lo esperado. Abajo están las causas ordenadas: empieza por las marcadas como Probable (según tus registros de los últimos 7 días), luego Revisar y al final Descartar.";
+  const ult7=regs.filter(r=>parse(r.fecha)>=new Date(parse(ult.fecha).getTime()-6*DAY));
+  const prev=regs.filter(r=>{const t=parse(r.fecha);return t<new Date(parse(ult.fecha).getTime()-6*DAY)&&t>=new Date(parse(ult.fecha).getTime()-13*DAY)});
+  const avg=(a,k)=>{const v=a.map(r=>r[k]).filter(n=>n!==""&&n!=null&&!isNaN(n)).map(Number);return v.length?v.reduce((x,y)=>x+y,0)/v.length:null};
+  const c=[];
+  const caida=prev.length?avg(prev,"real")-avg(ult7,"real"):null;
+  if(caida!==null&&caida>5)c.push(["bad","Caída brusca de producción",`Bajó ${fmt(caida)} puntos frente a la semana anterior. Una caída rápida suele indicar enfermedad (Newcastle, bronquitis), estrés fuerte o un cambio de alimento. Observa huevos con cáscara débil o deforme y aves decaídas, y consulta al veterinario.`]);
+  const t=avg(ult7,"temp");
+  if(t!==null&&t>=30)c.push([t>=33?"bad":"warn","Estrés por calor",`Temperatura máxima promedio de ${fmt(t)} °C. Sobre 30 °C las aves comen menos y ponen menos. Mejora la ventilación, da agua fresca, ofrece alimento en horas frescas y evita el hacinamiento.`]);
+  const alim=avg(ult7,"alimento");
+  if(alim!==null){const g=alim*1000/ult.aves,obj=LINEAS[l.linea].alim;if(g<obj*0.92)c.push(["bad","Consumo de alimento bajo",`Cada ave come unos ${Math.round(g)} g/día; la línea necesita cerca de ${obj} g. Revisa la cantidad servida, el estado del alimento (humedad, hongos) y que haya suficiente espacio en comederos.`])}
+  const luz=avg(ult7,"luz");
+  if(luz!==null&&luz<15)c.push(["warn","Pocas horas de luz",`Promedio de ${fmt(luz)} h. En postura se necesitan unas 16 horas de luz al día, sin reducirlas nunca durante la producción.`]);
+  if(ult7.some(r=>r.agua==="no"))c.push(["bad","Falta o mala calidad de agua","Registraste problemas con el agua. Un solo día sin agua puede bajar la postura por varios días. Revisa bebederos, tuberías y limpieza."]);
+  const muertes=ult7.reduce((s,r)=>s+(+r.muertes||0),0),pm=muertes/ult.aves*100;
+  if(pm>0.5)c.push(["bad","Mortalidad alta",`${muertes} aves muertas en 7 días (${fmt(pm,2)}%). Por encima de 0.1% semanal hay que buscar una causa sanitaria. Lleva aves al veterinario para necropsia.`]);
+  if(ult.sem>=70)c.push(["warn","Edad del lote",`El lote tiene ${ult.sem} semanas. La postura baja de forma natural con la edad; evalúa si conviene la renovación o una muda.`]);
+  if(ult.sem<26)c.push(["warn","Inicio de postura lento","Al inicio, la causa más común es peso corporal bajo al llegar a la madurez o un estímulo de luz tardío. Pesa una muestra de 50 aves y compáralo con la guía."]);
+  const extras=[["Calcio y calidad del alimento","Un alimento con poco calcio o proteína baja la postura y debilita la cáscara."],["Parásitos","Ácaros, piojos y parásitos internos reducen la producción sin matar aves. Revisa plumas y cloaca de noche."],["Huevos perdidos","Huevos puestos fuera del nido, rotos, comidos por las aves o tomados por otras personas cuentan como baja producción."],["Estrés por manejo","Ruido, visitas, depredadores, cambios de galpón o de horario afectan la postura por varios días."]];
+  if(!c.length)c.push(["warn","Sin causa clara en los datos","Tus registros no muestran calor, falta de alimento ni mortalidad alta. Completa alimento, temperatura y luz en cada día para un mejor diagnóstico, y revisa la lista de abajo."]);
+  const tag={bad:"Probable",warn:"Revisar"};
+  const TODO={"Caída brusca de producción":"Separa aves enfermas, revisa el calendario de vacunas y llama al veterinario hoy.","Estrés por calor":"Abre cortinas, moja el techo en horas de calor y da el alimento temprano y al atardecer.","Consumo de alimento bajo":"Pesa el alimento que sirves, revisa que no esté húmedo y llena comederos dos veces al día.","Pocas horas de luz":"Prende focos antes del amanecer o al anochecer hasta sumar 16 horas.","Falta o mala calidad de agua":"Limpia bebederos hoy y asegura agua fresca todo el día.","Mortalidad alta":"Retira las aves muertas, anótalas y lleva 2 o 3 al veterinario para revisión.","Edad del lote":"Calcula si el ingreso por huevos aún cubre el costo del alimento.","Inicio de postura lento":"Pesa 50 aves y anota el promedio para compararlo con la guía.","Sin causa clara en los datos":"Llena todos los campos durante 7 días para que la app pueda comparar."};
+  ul.innerHTML=c.map(([k,h,p])=>`<li><span class="pill ${k}">${tag[k]}</span><b>${h}</b><p>${p}</p>${TODO[h]?`<p class="todo"><b>Qué hacer hoy:</b> ${TODO[h]}</p>`:""}</li>`).join("")+extras.map(([h,p])=>`<li><span class="pill" style="background:var(--line);color:var(--ink)">Descartar</span><b>${h}</b><p>${p}</p></li>`).join("");
+}
+
+$("loteSel").addEventListener("change",e=>{state.activo=e.target.value;save();render()});
+$("btnNuevo").addEventListener("click",()=>{$("formLote").hidden=false;$("lNombre").focus()});
+$("cancelLote").addEventListener("click",()=>{$("formLote").hidden=true});
+$("formLote").addEventListener("submit",e=>{
+  e.preventDefault();
+  const edad=+$("lEdad").value;
+  const l={id:"l"+Date.now(),nombre:$("lNombre").value.trim(),linea:$("lLinea").value,aves:+$("lAves").value,nacimiento:iso(new Date(parse(hoy).getTime()-edad*7*DAY)),registros:[]};
+  if(state.demo){state={lotes:[],activo:null}}
+  state.lotes.push(l);state.activo=l.id;save();e.target.reset();e.target.hidden=true;render();
+});
+$("clearDemo").addEventListener("click",()=>{state={lotes:[],activo:null};save();$("formLote").hidden=false;renderEmpty()});
+$("formReg").addEventListener("submit",e=>{
+  e.preventDefault();
+  const l=lote();if(!l)return;
+  const r={fecha:$("rFecha").value,huevos:+$("rHuevos").value,muertes:+$("rMuertes").value||0,alimento:$("rAlimento").value,temp:$("rTemp").value,luz:$("rLuz").value,agua:$("rAgua").value};
+  l.registros=l.registros.filter(x=>x.fecha!==r.fecha);l.registros.push(r);save();render();
+  $("toast").textContent="Guardado.";setTimeout(()=>$("toast").textContent="",2500);
+  $("rHuevos").value="";$("rMuertes").value=0;
+});
+$("hist").addEventListener("click",e=>{const f=e.target.dataset.del;if(!f)return;const l=lote();l.registros=l.registros.filter(r=>r.fecha!==f);save();render()});
+$("rFecha").value=hoy;
+function renderEmpty(){
+  $("demoBanner").hidden=true;$("loteSel").innerHTML="";
+  $("lLinea").innerHTML=Object.entries(LINEAS).map(([k,v])=>`<option value="${k}">${v.nombre}</option>`).join("");
+  $("summary").innerHTML="";$("verdict").className="verdict none";$("verdict").textContent="Crea tu primer lote para empezar.";
+  $("chart").innerHTML="";$("causes").innerHTML="";$("diagIntro").textContent="";$("hist").innerHTML="";$("ref").innerHTML="";
+}
+state.lotes.length?render():(renderEmpty(),$("formLote").hidden=false);
+let rz;addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(state.lotes.length)renderChart(lote(),[...lote().registros].sort((a,b)=>a.fecha<b.fecha?-1:1).map(r=>fila(lote(),r)))},200)});
+</script>
+
+<script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}</script>
+</body>
+</html>
