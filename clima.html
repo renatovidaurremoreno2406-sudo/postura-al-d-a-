@@ -3,26 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2f5d3a">
+<meta name="theme-color" content="#070b09">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Alertas del clima · Postura al Día</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<title>Radar del Clima · Postura al Día</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
 :root{
-  --bg:#f6f7f0; --surface:#ffffff; --ink:#1f2a22; --muted:#5d6a5f; --line:#dde3d4; --line-strong:#c7d0bd;
-  --green:#3c7a46; --green-dark:#2a5a33; --yolk:#e09b12; --yolk-dark:#b47908; --yolk-soft:#fdf1d6;
-  --ok:#2f8a4a; --ok-bg:#e1f3e5; --warn:#a96a00; --warn-bg:#fdf0d6; --bad:#c0392b; --bad-bg:#fbe3e0;
-  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --bg:#070b09; --surface:#0f1712; --surface-2:#141f18; --ink:#e9f5ee; --muted:#8ea69a; --line:#1d2b23; --line-strong:#2a3d31;
+  --green:#22c55e; --green-dark:#16a34a; --green-glow:rgba(34,197,94,.18); --on-green:#03140a;
+  --yolk:#f5b83d; --yolk-dark:#c98f1c; --yolk-soft:rgba(245,184,61,.12);
+  --ok:#4ade80; --ok-bg:rgba(34,197,94,.12); --warn:#fbbf24; --warn-bg:rgba(251,191,36,.12); --bad:#f87171; --bad-bg:rgba(248,113,113,.12);
+  --display:"Space Grotesk",system-ui,sans-serif;
   --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
 }
-@media (prefers-color-scheme: dark){:root{
-  --bg:#131a15; --surface:#1c241e; --ink:#eaf0e8; --muted:#a5b3a8; --line:#2f3b31; --line-strong:#3e4c40;
-  --green:#5fae6c; --green-dark:#3d7f49; --yolk:#f2b33a; --yolk-dark:#c48a17; --yolk-soft:#3a2f16;
-  --ok:#7fd196; --ok-bg:#1d3a25; --warn:#f2b45a; --warn-bg:#3b2d13; --bad:#f08a80; --bad-bg:#3f1f1c; color-scheme:dark}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5}
+body{margin:0;color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5}
 .app{max-width:560px;margin:0 auto;padding:12px max(16px,env(safe-area-inset-left,0px)) 40px}
 .topbar{display:flex;align-items:center;gap:8px;min-height:40px}
 .iconbtn{background:none;border:0;color:var(--muted);font-size:1.5rem;line-height:1;padding:6px;border-radius:8px;text-decoration:none}
@@ -60,32 +58,96 @@ select{flex:1;min-width:180px}
 .msg{padding:14px;border-radius:14px;background:var(--surface);border:2px dashed var(--line-strong);color:var(--muted)}
 .btn.wa{background:#1f9d55;color:#fff;border-color:#157a41;text-transform:none}
 :focus-visible{outline:3px solid var(--yolk);outline-offset:2px}
+
+/* Tema Postura al Día: negro + verde */
+html{background:var(--bg)}
+body{background:
+  radial-gradient(900px 500px at 50% -120px,rgba(34,197,94,.22),transparent 70%),
+  radial-gradient(600px 400px at 110% 110%,rgba(34,197,94,.08),transparent 70%),
+  var(--bg);background-attachment:fixed;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(34,197,94,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(34,197,94,.06) 1px,transparent 1px);
+  background-size:36px 36px;-webkit-mask-image:linear-gradient(to bottom,#000 0,transparent 75%);mask-image:linear-gradient(to bottom,#000 0,transparent 75%)}
+.app{position:relative;z-index:1}
+.search{display:flex;gap:10px}
+.search input{flex:1;min-width:0;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-height:52px}
+.search input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-glow)}
+.search .btn{width:56px;padding:0;font-size:1.3rem}
+.res{list-style:none;margin:-8px 0 0;padding:6px;background:var(--surface);border:1px solid var(--line-strong);border-radius:14px;display:flex;flex-direction:column;gap:2px}
+.res[hidden]{display:none}
+.res button{all:unset;box-sizing:border-box;display:flex;flex-direction:column;width:100%;padding:10px 12px;border-radius:10px;cursor:pointer}
+.res button:hover,.res button:focus-visible{background:var(--ok-bg)}
+.res small{color:var(--muted);font-size:.85rem}
+.res .hd{color:var(--muted);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px 2px}
+.place{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.95rem}
+.place b{color:var(--ink)}.bottom{z-index:2}
+h1{color:var(--ink);letter-spacing:-.02em}
+h1 em{font-style:normal;color:var(--green)}
+h2,h3{letter-spacing:-.01em}
+
+h1{font-size:1.7rem}
+h1 em{font-style:normal;color:var(--green)}
+select,.btn{background:var(--surface);border:1px solid var(--line);border-bottom-width:1px;border-radius:14px}
+select:focus,.btn:hover{border-color:var(--green)}
+.btn{color:var(--green)}
+.btn.main{background:var(--green);color:var(--on-green);border:0;box-shadow:0 8px 24px var(--green-glow)}
+.btn.wa{background:#1fa855;color:#fff;border:0;box-shadow:0 8px 24px rgba(31,168,85,.25)}
+.btn:active{transform:scale(.98);border-bottom-width:1px}
+.status{border:1px solid var(--line)}
+.status.l0{border-color:rgba(34,197,94,.45)}.status.l1{border-color:rgba(251,191,36,.45)}.status.l2{border-color:rgba(248,113,113,.5)}
+.day{background:var(--surface);border:1px solid var(--line)}
+.day.l1{border-color:rgba(251,191,36,.6)}.day.l2{border-color:rgba(248,113,113,.65);background:var(--bad-bg)}
+.card{background:var(--surface);border:1px solid var(--line)}
+.card.l2{border-color:rgba(248,113,113,.55)}.card.l1{border-color:rgba(251,191,36,.55)}
+.msg{background:var(--surface);border:1px dashed var(--line-strong)}
+.iconbtn{color:var(--green)}
+
+.brand{display:inline-flex;align-items:center;gap:8px;color:var(--ink);opacity:.92}
+.brand span{font-family:var(--display);font-size:1rem;letter-spacing:.06em}
+.brand b{font-weight:700}.brand i{font-style:normal;font-weight:400;color:#4ade80}
+.topbar .brand{margin-left:auto}
+.topbar .brand span{font-size:.9rem}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="topbar"><a class="iconbtn" href="./" aria-label="Volver a Postura al Día">‹</a><h1>Alertas del clima</h1></div>
+  <div class="topbar"><a class="iconbtn" href="./" aria-label="Volver a Postura al Día">‹</a><h1>Radar <em>del Clima</em></h1><div class="brand" aria-label="BITSAC"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="gc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4ade80"/><stop offset="1" stop-color="#16a34a"/></linearGradient></defs><rect x="2" y="2" width="9" height="9" rx="2.4" fill="#22c55e" opacity=".35"/><path d="M13 11C13 5.5 16.5 2 22 2C22 7.5 18.5 11 13 11Z" fill="url(#gc)"/><rect x="2" y="13" width="9" height="9" rx="2.4" fill="url(#gc)"/><rect x="13" y="13" width="9" height="9" rx="2.4" fill="#22c55e" opacity=".65"/></svg><span><b>BIT</b><i>SAC</i></span></div></div>
   <main>
-    <p class="lead">Calor y lluvia de los próximos 7 días. Y qué hacer para que tus gallinas sigan poniendo.</p>
-    <div class="row">
-      <select id="lugar" aria-label="Elige tu distrito"></select>
-      <button class="btn" id="gps" type="button">📍 Mi ubicación</button>
+    <p class="lead">Todo el Perú. 7 días y qué hacer con tus gallinas.</p>
+    <div class="search">
+      <input id="q" type="search" placeholder="Busca tu distrito o ciudad" autocomplete="off" enterkeyhint="search" aria-label="Busca tu distrito o ciudad" aria-controls="res">
+      <button class="btn" id="gps" type="button" aria-label="Usar mi ubicación">📍</button>
     </div>
+    <ul id="res" class="res" hidden></ul>
+    <p class="place" id="place"></p>
     <div id="out" aria-live="polite"><div class="msg">Mirando el cielo…</div></div>
   </main>
 </div>
 
 <script>
-/* Distritos (coordenadas aproximadas del centro poblado) */
+/* Lista de respaldo (sin internet en el buscador): capitales de región y ciudades de San Martín */
 const LUGARES=[
-  ["Tarapoto",-6.4886,-76.3600],["Banda de Shilcayo",-6.4910,-76.3470],["Morales",-6.4790,-76.3830],
-  ["Chazuta",-6.5720,-76.1370],["Sauce",-6.6900,-76.2170],["Lamas",-6.4200,-76.5200],
-  ["Picota",-6.9200,-76.3300],["Bellavista",-7.0560,-76.5910],["Juanjuí",-7.1780,-76.7300],
-  ["Saposoa",-6.9350,-76.7720],["Moyobamba",-6.0340,-76.9720],["Soritor",-6.1390,-77.1030],
-  ["Rioja",-6.0600,-77.1680],["Nueva Cajamarca",-5.9380,-77.3080],["Tocache",-8.1880,-76.5100],
-  ["Yurimaguas",-5.9000,-76.1200]
+  ["Tarapoto","San Martín",-6.4886,-76.3600],["Banda de Shilcayo","San Martín",-6.4910,-76.3470],["Morales","San Martín",-6.4790,-76.3830],
+  ["Chazuta","San Martín",-6.5720,-76.1370],["Sauce","San Martín",-6.6900,-76.2170],["Lamas","San Martín",-6.4200,-76.5200],
+  ["Picota","San Martín",-6.9200,-76.3300],["Bellavista","San Martín",-7.0560,-76.5910],["Juanjuí","San Martín",-7.1780,-76.7300],
+  ["Saposoa","San Martín",-6.9350,-76.7720],["Moyobamba","San Martín",-6.0340,-76.9720],["Soritor","San Martín",-6.1390,-77.1030],
+  ["Rioja","San Martín",-6.0600,-77.1680],["Nueva Cajamarca","San Martín",-5.9380,-77.3080],["Tocache","San Martín",-8.1880,-76.5100],
+  ["Yurimaguas","Loreto",-5.9000,-76.1200],["Iquitos","Loreto",-3.7500,-73.2500],["Chachapoyas","Amazonas",-6.2300,-77.8700],
+  ["Bagua Grande","Amazonas",-5.7570,-78.4450],["Huaraz","Áncash",-9.5300,-77.5300],["Chimbote","Áncash",-9.0750,-78.5930],
+  ["Abancay","Apurímac",-13.6340,-72.8810],["Arequipa","Arequipa",-16.3990,-71.5370],["Ayacucho","Ayacucho",-13.1600,-74.2240],
+  ["Cajamarca","Cajamarca",-7.1640,-78.5100],["Jaén","Cajamarca",-5.7080,-78.8080],["Callao","Callao",-12.0500,-77.1200],
+  ["Cusco","Cusco",-13.5320,-71.9670],["Quillabamba","Cusco",-12.8630,-72.6920],["Huancavelica","Huancavelica",-12.7870,-74.9730],
+  ["Huánuco","Huánuco",-9.9300,-76.2400],["Tingo María","Huánuco",-9.2950,-75.9970],["Ica","Ica",-14.0680,-75.7290],
+  ["Huancayo","Junín",-12.0650,-75.2050],["La Merced","Junín",-11.0550,-75.3280],["Satipo","Junín",-11.2540,-74.6380],
+  ["Trujillo","La Libertad",-8.1120,-79.0290],["Chiclayo","Lambayeque",-6.7710,-79.8400],["Lima","Lima",-12.0460,-77.0430],
+  ["Huacho","Lima",-11.1070,-77.6050],["Puerto Maldonado","Madre de Dios",-12.5930,-69.1890],["Moquegua","Moquegua",-17.1930,-70.9350],
+  ["Cerro de Pasco","Pasco",-10.6830,-76.2560],["Oxapampa","Pasco",-10.5770,-75.4040],["Piura","Piura",-5.1940,-80.6330],
+  ["Sullana","Piura",-4.9030,-80.6850],["Puno","Puno",-15.8400,-70.0200],["Juliaca","Puno",-15.5000,-70.1330],
+  ["Tacna","Tacna",-18.0130,-70.2510],["Tumbes","Tumbes",-3.5670,-80.4510],["Pucallpa","Ucayali",-8.3790,-74.5530]
 ];
-const KEY="postura-clima-v1";
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const sinTilde=t=>t.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+const KEY="postura-clima-v2";
 let S={};try{S=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const $=id=>document.getElementById(id);
@@ -118,7 +180,8 @@ function analizar(api){
     const acumPrev=[-2,-1,0].reduce((s,j)=>s+(i+j>=0?(d.precipitation_sum[i+j]||0):0),0);
     const caminos=Math.max(acum,acumPrev)>=80&&lluvia>=10;
     if(caminos)lluv=2;
-    dias.push({fecha:d.time[i],tmax,tmin,idx:Math.round(idx),lluvia,prob,calor,lluv,caminos,nivel:Math.max(calor,lluv)});
+    const frio=tmin<=0?2:tmin<=5?1:0;
+    dias.push({fecha:d.time[i],tmax,tmin,idx:Math.round(idx),lluvia,prob,calor,lluv,frio,caminos,nivel:Math.max(calor,lluv,frio)});
   }
   return dias;
 }
@@ -147,6 +210,17 @@ const ACCIONES={
     "Zanjas limpias|y techo sin goteras.",
     "Cama seca|siempre.",
     "Bota el agua estancada.|Zancudos y dengue."]},
+  frio1:{t:"Frío: abriga el galpón",l:1,em:"🥶",items:[
+    "Cierra cortinas|al atardecer. Deja una rendija arriba para ventilar.",
+    "Cama gruesa|y seca, de 10 cm.",
+    "Más alimento:|con frío comen más para calentarse.",
+    "Pollitos|con criadora o foco encendido toda la noche."]},
+  frio2:{t:"Helada: protege a tus aves",l:2,em:"❄️",items:[
+    "Cierra el galpón|de noche, sin dejar corrientes de aire.",
+    "Agua tibia|en la mañana. Revisa que no se congele.",
+    "Más alimento|al final de la tarde.",
+    "Pollitos|con calor extra o dentro de un ambiente cerrado.",
+    "Cubre los cultivos|con plástico o paja al anochecer."]},
   caminos:{t:"Caminos en riesgo",l:2,em:"🚧",items:[
     "Varios días de lluvia|traen huaicos y desbordes.",
     "Guarda reserva|de alimento, medicinas y combustible.",
@@ -162,19 +236,22 @@ function resumen(dias){
   if(dias.some(x=>x.caminos))tipos.push("caminos");
   if(l===2)tipos.push("lluvia2");else if(l===1)tipos.push("lluvia1");
   if(c===2)tipos.push("calor2");else if(c===1)tipos.push("calor1");
+  const f=Math.max(...dias.map(x=>x.frio));
+  if(f===2)tipos.push("frio2");else if(f===1)tipos.push("frio1");
   tipos.sort((a,b)=>ACCIONES[b].l-ACCIONES[a].l);
   return{max,tipos};
 }
-const icono=x=>x.lluv>=x.calor&&x.lluv>0?(x.lluv===2?"⛈️":"🌧️"):x.calor===2?"🔥":x.calor===1?"☀️":x.lluvia>=5?"🌦️":"🌤️";
+const icono=x=>x.frio>Math.max(x.lluv,x.calor)?(x.frio===2?"❄️":"🥶"):x.lluv>=x.calor&&x.lluv>0?(x.lluv===2?"⛈️":"🌧️"):x.calor===2?"🔥":x.calor===1?"☀️":x.lluvia>=5?"🌦️":"🌤️";
 function frase(x){
   const p=[];
   if(x.calor===2)p.push("calor fuerte");else if(x.calor===1)p.push("calor");
   if(x.lluv===2)p.push(x.caminos?"caminos en riesgo":"lluvia muy fuerte");else if(x.lluv===1)p.push("lluvia fuerte");
+  if(x.frio===2)p.push("helada");else if(x.frio===1)p.push("frío fuerte");
   return p.join(" y ");
 }
 
 function textoWhatsApp(nombre,dias,R){
-  const L=[`*🐔 Clima para tus gallinas: ${nombre}*`,`Próximos 7 días:`];
+  const L=[`*📡 Radar del Clima: ${nombre}*`,`Próximos 7 días:`];
   dias.forEach(x=>{const f=fecha(x.fecha);L.push(`${icono(x)} ${DIAS[f.getDay()]} ${f.getDate()}: ${fmt(x.tmax)}°C, ${fmt(x.lluvia)} mm${x.nivel?` (${frase(x)})`:""}`)});
   if(R.tipos.length){
     L.push("","*Haz esto y no pierdas huevos:*");
@@ -210,7 +287,7 @@ async function cargar(nombre,lat,lon){
   try{
     const r=await fetch(url);if(!r.ok)throw new Error(r.status);
     const api=await r.json();
-    S.cache=S.cache||{};S.cache[nombre]={api,cuando:Date.now()};save();
+    S.cache={[nombre]:{api,cuando:Date.now()}};save();
     pintar(nombre,analizar(api),Date.now(),false);
   }catch(e){
     const c=S.cache&&S.cache[nombre];
@@ -219,25 +296,44 @@ async function cargar(nombre,lat,lon){
   }
 }
 
-/* Inicio */
-const sel=$("lugar");
-sel.innerHTML=LUGARES.map((l,i)=>`<option value="${i}">${l[0]}</option>`).join("")+`<option value="gps" hidden>Mi ubicación</option>`;
-function elegir(){
-  if(sel.value==="gps"&&S.gps){cargar("Mi ubicación",S.gps[0],S.gps[1]);return}
-  const l=LUGARES[+sel.value];cargar(l[0],l[1],l[2]);
+/* Inicio: buscador para todo el Perú */
+const q=$("q"),res=$("res");
+function mostrarLugar(l){q.value="";$("place").innerHTML=`📍 <b>${esc(l.n)}</b>${l.r?" · "+esc(l.r):""}`;}
+function elegirLugar(l){
+  S.lugar=l;S.recientes=[l,...(S.recientes||[]).filter(x=>x.n!==l.n||x.r!==l.r)].slice(0,5);save();
+  res.hidden=true;mostrarLugar(l);q.blur();cargar(l.n,l.lat,l.lon);
 }
-sel.value=S.lugar!=null?S.lugar:"0";if(sel.value==="")sel.value="0";
-sel.addEventListener("change",()=>{S.lugar=sel.value;save();elegir()});
+function lista(items,titulo){
+  if(!items.length){res.innerHTML=`<li class="hd">Sin resultados. Prueba con la ciudad más cercana.</li>`;res.hidden=false;return}
+  res.innerHTML=(titulo?`<li class="hd">${titulo}</li>`:"")+items.map((l,i)=>`<li><button type="button" data-i="${i}"><b>${esc(l.n)}</b>${l.r?`<small>${esc(l.r)}</small>`:""}</button></li>`).join("");
+  res.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>elegirLugar(items[+b.dataset.i])));
+  res.hidden=false;
+}
+const local=t=>{const k=sinTilde(t);return LUGARES.filter(l=>sinTilde(l[0]).includes(k)||sinTilde(l[1]).includes(k)).slice(0,8).map(l=>({n:l[0],r:l[1],lat:l[2],lon:l[3]}))};
+let tmr,ultima=0;
+async function buscar(t){
+  const id=++ultima;
+  try{
+    const r=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(t)}&count=8&language=es&country_code=PE&format=json`);
+    if(!r.ok)throw 0;const j=await r.json();if(id!==ultima)return;
+    const items=(j.results||[]).map(x=>({n:x.name,r:[x.admin2&&x.admin2!==x.name?x.admin2:"",x.admin1].filter(Boolean).join(", "),lat:+x.latitude.toFixed(3),lon:+x.longitude.toFixed(3)}));
+    lista(items.length?items:local(t));
+  }catch(e){if(id===ultima)lista(local(t),"Sin internet: ciudades principales")}
+}
+q.addEventListener("input",()=>{clearTimeout(tmr);const t=q.value.trim();if(t.length<2){recientes();return}tmr=setTimeout(()=>buscar(t),300)});
+q.addEventListener("focus",()=>{if(q.value.trim().length<2)recientes()});
+q.addEventListener("keydown",e=>{if(e.key==="Escape"){res.hidden=true;q.blur()}if(e.key==="Enter"){const b=res.querySelector("button");if(b)b.click()}});
+document.addEventListener("click",e=>{if(!e.target.closest(".search,.res"))res.hidden=true});
+function recientes(){const r=S.recientes||[];if(r.length)lista(r,"Recientes");else res.hidden=true}
 $("gps").addEventListener("click",()=>{
   if(!navigator.geolocation){alert("Tu celular no permite usar la ubicación.");return}
   $("out").innerHTML=`<div class="msg">Buscando tu ubicación…</div>`;
   navigator.geolocation.getCurrentPosition(p=>{
-    S.gps=[+p.coords.latitude.toFixed(3),+p.coords.longitude.toFixed(3)];S.lugar="gps";save();
-    sel.querySelector('[value="gps"]').hidden=false;sel.value="gps";elegir();
-  },()=>{$("out").innerHTML=`<div class="msg">No encontramos tu ubicación. Elige tu distrito.</div>`},{timeout:15000});
+    elegirLugar({n:"Mi ubicación",r:"",lat:+p.coords.latitude.toFixed(3),lon:+p.coords.longitude.toFixed(3)});
+  },()=>{$("out").innerHTML=`<div class="msg">No encontramos tu ubicación. Escribe tu distrito.</div>`},{timeout:15000});
 });
-if(S.gps)sel.querySelector('[value="gps"]').hidden=false;
-elegir();
+const inicial=S.lugar&&typeof S.lugar==="object"?S.lugar:{n:"Tarapoto",r:"San Martín",lat:-6.4886,lon:-76.36};
+mostrarLugar(inicial);cargar(inicial.n,inicial.lat,inicial.lon);
 </script>
 <script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}</script>
 </body>
