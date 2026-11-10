@@ -235,7 +235,7 @@ const STEPS=[
  {id:"precio",type:"num",q:"¿A cuánto vendes cada huevo?",unit:"soles por huevo",min:0,step:0.05,dec:true,optional:true,hint:"Así calculamos cuánto dinero pierdes.",
   fb:()=>{const f=faltan();return f>0&&A.precio?["warn","Mira esto",`Te faltan ${int(f)} huevos al día. Eso son S/ ${fmt(f*A.precio*30,0)} al mes que no estás ganando.`]:["ok","¡Listo!","Ya tenemos todo para tu diagnóstico."]}}
 ];
-const TEL="51986563096";
+const TEL="51973251113";
 const waBio=m=>"https://wa.me/"+TEL+"?text="+encodeURIComponent(m);
 const real=()=>A.aves>0?A.huevos/A.aves*100:0;
 const faltan=()=>Math.max(0,estandar(A.edad)/100*A.aves-A.huevos);
